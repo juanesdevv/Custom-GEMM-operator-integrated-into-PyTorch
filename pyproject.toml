@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0", "torch", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "student_gemm"
+version = "0.1.0"
+description = "Custom CPU GEMM operator integrated into PyTorch"
+requires-python = ">=3.12"
+dependencies = [
+    "torch>=2.0.0",
+    "numpy",
+    "pytest>=9.0.3",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "matplotlib", "pandas"]

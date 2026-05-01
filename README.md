@@ -35,12 +35,14 @@ cd gemm
 ### 2. Create and Activate Virtual Environment
 
 Using `venv`:
+
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 Or using `uv` (recommended for speed):
+
 ```bash
 uv venv
 source .venv/bin/activate
@@ -53,6 +55,7 @@ pip install torch numpy pytest matplotlib pandas
 ```
 
 Or install from `pyproject.toml`:
+
 ```bash
 pip install -e .
 ```
@@ -66,6 +69,7 @@ pip install -e . --no-build-isolation
 ```
 
 This will:
+
 - Compile `src/gemm.cpp` with optimization flags (`-O3 -march=native -fopenmp`)
 - Generate `src.so` (the compiled shared library)
 - Register operators with PyTorch under the `student_ops` namespace
@@ -169,6 +173,7 @@ python -m benchmarks.benchmark_gemm --help
 #### Output
 
 The benchmark generates:
+
 - **Console table:** Median times (ms) and throughput (TFLOP/s) for each size
 - **Cached results:** `benchmark_results.json` — all measurements in JSON format
 - **Plots:** Saved to `benchmark_plots/`
@@ -178,6 +183,7 @@ The benchmark generates:
   - `speedup_vs_n.png` — Speedup of blocked kernel relative to naive
 
 **Example Output:**
+
 ```
 CPU cores available: 8
 PyTorch version:     2.0.0
@@ -236,16 +242,18 @@ gemm/
 The extension exports two custom PyTorch operators:
 
 #### `gemm_naive(A: Tensor, B: Tensor) → C: Tensor`
+
 - Simple i-k-j loop with OpenMP parallelization
 - Memory-efficient but low arithmetic intensity
 
 #### `gemm_blocked(A: Tensor, B: Tensor, blockm: int, blockn: int, blockk: int) → C: Tensor`
+
 - Tiled algorithm: breaks matrices into cache-sized blocks
 - Improves L1/L2 cache hit rates
 - Default block sizes: 64×64×64
 - Significant speedup on modern CPUs
 
-### Python Bindings (src/__init__.py)
+### Python Bindings (src/**init**.py)
 
 - `GEMMNaiveFunction` / `GEMMBlockedFunction`: Custom autograd functions
 - Gradients computed via GEMM transpose operations
@@ -269,12 +277,14 @@ The extension exports two custom PyTorch operators:
 ### Build Failures
 
 **Issue:** `ImportError: cannot import name 'BuildExtension'`
+
 ```bash
 # Solution: Update PyTorch
 pip install --upgrade torch
 ```
 
 **Issue:** OpenMP not found during build
+
 ```bash
 # Solution: Install libomp (macOS)
 brew install libomp
@@ -286,6 +296,7 @@ sudo apt-get install libomp-dev
 ### Runtime Issues
 
 **Issue:** `RuntimeError: Inner dimensions must match`
+
 ```python
 # Solution: Check matrix dimensions
 A = torch.randn(m, k)
@@ -294,6 +305,7 @@ C = gemm_blocked(A, B)  # ✓ Correct
 ```
 
 **Issue:** Gradient computation differs from PyTorch
+
 - Ensure float64 for gradcheck (float32 may have precision issues)
 - Check that `atol`/`rtol` parameters in gradcheck are appropriate
 
